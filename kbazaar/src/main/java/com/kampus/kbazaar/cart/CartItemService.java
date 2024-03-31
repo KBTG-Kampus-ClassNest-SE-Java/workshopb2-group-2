@@ -9,15 +9,11 @@ import org.springframework.stereotype.Service;
 public class CartItemService {
 
     private final PromotionService promotionService;
-    private final CartItemRepository cartItemRepository;
 
-    public CartItemService(
-            PromotionService promotionService, CartItemRepository cartItemRepository) {
+    public CartItemService(PromotionService promotionService) {
         this.promotionService = promotionService;
-        this.cartItemRepository = cartItemRepository;
     }
 
-    // TODO poc interface
     public BigDecimal calculateDiscountPrice(CartItem cartItem) {
         String[] promotions = cartItem.getPromotionCodes().split(",");
         BigDecimal totalDiscount = BigDecimal.ZERO;
@@ -32,18 +28,4 @@ public class CartItemService {
 
         return totalDiscount;
     }
-
-    // public void updateGrandTotalPrice(Long id, BigDecimal discount) {
-    //     val cartItemOptional = this.cartItemRepository.findById(id);
-    //     if (cartItemOptional.isEmpty()) {
-    //         throw new BadRequestException("Cart id not found.");
-    //     }
-    //
-    //     val cartItem = cartItemOptional.get();
-    //     val totalDiscount = calculateDiscountPrice(cartItem);
-    //
-    //
-    //     // update discount, grand total price to item
-    //     // TODO implement
-    // }
 }

@@ -1,21 +1,10 @@
 package com.kampus.kbazaar.cart;
 
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.kampus.kbazaar.promotion.Promotion;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +98,7 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-        Cart cartResult = cartService.AppliedSpecificPromotion(cart, promotion);
+        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
 
         assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
         assertEquals("FIXEDAMOUNT2", cartResult.getCartItems().get(0).getPromotionCodes());
@@ -123,11 +112,11 @@ public class CartServiceTest {
         promotion.setProductSkus("STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
         promotion.setDiscountAmount(new BigDecimal(2));
 
-        //product sku not match to promotion code
-        CartItem  cartItem = new CartItem();
+        // product sku not match to promotion code
+        CartItem cartItem = new CartItem();
         cartItem.setId(1L);
         cartItem.setSku("STATIONERY-NOTEBOOK-MOLESKINE");
-        cartItem.setDiscount(new BigDecimal( 0));
+        cartItem.setDiscount(new BigDecimal(0));
         cartItem.setPromotionCodes("");
         List<CartItem> cartItemsList = new ArrayList<>();
         cartItemsList.add(cartItem);
@@ -135,10 +124,9 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-        Cart cartResult = cartService.AppliedSpecificPromotion(cart, promotion);
+        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
 
         assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
         assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
     }
-
 }

@@ -5,7 +5,6 @@ import com.kampus.kbazaar.exceptions.InternalServerException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
 import com.kampus.kbazaar.promotion.Promotion;
-import com.kampus.kbazaar.promotion.PromotionRepository;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
@@ -13,18 +12,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
-
-
-
-import com.kampus.kbazaar.promotion.Promotion;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final PromotionRepository promotionRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartItemService cartItemService;
@@ -32,13 +25,11 @@ public class CartService {
 
     public CartService(
             CartRepository cartRepository,
-            PromotionRepository promotionRepository,
             CartItemRepository cartItemRepository,
             ProductRepository productRepository,
             CartItemService cartItemService,
             PromotionService promotionService) {
         this.cartRepository = cartRepository;
-        this.promotionRepository = promotionRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartItemService = cartItemService;
         this.promotionService = promotionService;
@@ -66,8 +57,7 @@ public class CartService {
 
     // this method will find cart by username
     public Optional<Cart> getCartByUsername(String username) {
-        Optional<Cart> cartUser = cartRepository.findAllWithItemsByUsername(username);
-        return cartUser;
+        return cartRepository.findAllWithItemsByUsername(username);
     }
 
     @Transactional
@@ -156,7 +146,7 @@ public class CartService {
     }
 
     // this method will update cart items of user
-    public Cart AppliedSpecificPromotion(Cart cartUser, Promotion promotionRequest) {
+    public Cart appliedSpecificPromotion(Cart cartUser, Promotion promotionRequest) {
         String[] productSkuArray = promotionRequest.getProductSkus().split(",");
         for (int i = 0; i < cartUser.getCartItems().size(); i++) {
             for (String productSku : productSkuArray) {
@@ -174,7 +164,6 @@ public class CartService {
         return cartUser;
     }
 
-    // TODO poc interface
     public BigDecimal calculateDiscountPrice(Cart cart) {
         String[] promotions = cart.getPromotionCodes().split(",");
         BigDecimal totalDiscount = BigDecimal.ZERO;
@@ -222,13 +211,5 @@ public class CartService {
         cart.setGrandTotal(subTotal.subtract(summaryDiscount));
 
         return cartRepository.save(cart);
-    }
-
-    // example add product to cart
-    public void addSkuToCart(String username, String skuCode) {
-        // do insert cart item by username
-        // val cart = cartRepository.save(entity);
-        // val grandTotalPrice = calculateGrandTotalPrice(cart);
-        // updateGrandTotalPrice();
     }
 }
