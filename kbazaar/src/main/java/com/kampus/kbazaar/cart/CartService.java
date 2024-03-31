@@ -2,9 +2,10 @@ package com.kampus.kbazaar.cart;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
 import com.kampus.kbazaar.exceptions.InternalServerException;
+import com.kampus.kbazaar.exceptions.NotFoundException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
-import com.kampus.kbazaar.promotion.Promotion;
+import com.kampus.kbazaar.promotion.*;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
@@ -62,7 +63,7 @@ public class CartService {
 
     @Transactional
     public AddProductToCartResponse addProductToCart(
-            AddProductToCartRequest request, String username) throws Exception {
+            AddProductToCartRequest request, String username) {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
@@ -77,7 +78,7 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
+                BigDecimal price;
                 Optional<Product> productOptional =
                         productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
@@ -86,7 +87,7 @@ public class CartService {
                     price = product.getPrice();
                     cartItem.setPrice(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
@@ -107,9 +108,7 @@ public class CartService {
                     cartRepository.save(cart);
                 }
 
-                AddProductToCartResponse addProductToCartResponse =
-                        new AddProductToCartResponse(username, cartItem, subTotal);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, subTotal);
             } else {
                 Cart cart = new Cart();
                 cart.setUsername(username);
@@ -120,7 +119,7 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
+                BigDecimal price;
                 Optional<Product> productOptional =
                         productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
@@ -130,23 +129,44 @@ public class CartService {
                     cartItem.setPrice(price);
                     cart.setSubtotal(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
                 cartRepository.save(cart);
 
-                AddProductToCartResponse addProductToCartResponse =
-                        new AddProductToCartResponse(username, cartItem, price);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, price);
             }
         } catch (Exception error) {
             throw new InternalServerException("internal server error");
         }
     }
 
+    public CartResponse applyPromotion(PromotionRequest promotionRequest, String username) {
+        Optional<Cart> cartOptional = cartRepository.findAllWithItemsByUsername(username);
+        if (cartOptional.isEmpty()) {
+            throw new NotFoundException("cart not found");
+        }
+        Cart cart = cartOptional.get();
+
+        if ("ENTIRE_CART".equals(promotionRequest.getApplicableTo())) {
+            return applyCartPromotion(cart, promotionRequest.getCode());
+        } else {
+            return appliedSpecificPromotion(cart, promotionRequest).toCartResponse();
+        }
+    }
+
+    public CartResponse applyCartPromotion(Cart cart, String code) {
+        List<String> allPromotion = new ArrayList<>(List.of(cart.getPromotionCodes().split(",")));
+        allPromotion.add(code);
+        cart.setPromotionCodes(allPromotion.toString());
+        cartRepository.save(cart);
+        Cart updatedCart = updateSummaryPrice(cart.getId());
+        return updatedCart.toCartResponse();
+    }
+
     // this method will update cart items of user
-    public Cart appliedSpecificPromotion(Cart cartUser, Promotion promotionRequest) {
+    public Cart appliedSpecificPromotion(Cart cartUser, PromotionRequest promotionRequest) {
         String[] productSkuArray = promotionRequest.getProductSkus().split(",");
         for (int i = 0; i < cartUser.getCartItems().size(); i++) {
             for (String productSku : productSkuArray) {
@@ -160,7 +180,6 @@ public class CartService {
                 }
             }
         }
-        System.out.println(cartUser);
         return cartUser;
     }
 
