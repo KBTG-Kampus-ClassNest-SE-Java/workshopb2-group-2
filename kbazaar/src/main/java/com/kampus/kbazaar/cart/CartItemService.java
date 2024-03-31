@@ -3,8 +3,6 @@ package com.kampus.kbazaar.cart;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import java.math.BigDecimal;
-import org.springframework.stereotype.Service;
-
 
 public class CartItemService {
 
