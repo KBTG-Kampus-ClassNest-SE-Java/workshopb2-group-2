@@ -5,7 +5,7 @@ import com.kampus.kbazaar.promotion.PromotionService;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
-@Service
+
 public class CartItemService {
 
     private final PromotionService promotionService;
