@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = JwtAuthFilter.class))
-public class CartControllerTest {
+class CartControllerTest {
 
     @Autowired private MockMvc mockMvc;
 

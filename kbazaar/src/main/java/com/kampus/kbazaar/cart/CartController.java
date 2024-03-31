@@ -20,8 +20,8 @@ public class CartController {
 
     @PostMapping("/carts/{username}/items")
     public AddProductToCartResponse addProductToCart(
-            @Validated @RequestBody AddProductToCartRequest request, @PathVariable String username)
-            throws Exception {
+            @Validated @RequestBody AddProductToCartRequest request,
+            @PathVariable String username) {
         return cartService.addProductToCart(request, username);
     }
 }
