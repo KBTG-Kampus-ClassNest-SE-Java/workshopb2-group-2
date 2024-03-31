@@ -1,19 +1,20 @@
 package com.kampus.kbazaar.cart;
+
 import com.kampus.kbazaar.exceptions.BadRequestException;
-import com.kampus.kbazaar.promotion.Promotion;
-import com.kampus.kbazaar.promotion.PromotionResponse;
-import com.kampus.kbazaar.promotion.PromotionService;
 import com.kampus.kbazaar.exceptions.InternalServerException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
+import com.kampus.kbazaar.promotion.Promotion;
 import com.kampus.kbazaar.promotion.PromotionRepository;
+import com.kampus.kbazaar.promotion.PromotionResponse;
+import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 import lombok.val;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CartService {
@@ -24,7 +25,13 @@ public class CartService {
     private final CartItemService cartItemService;
     private final PromotionService promotionService;
 
-    public CartService(CartRepository cartRepository, PromotionRepository promotionRepository, CartItemRepository cartItemRepository, ProductRepository productRepository, CartItemService cartItemService, PromotionService promotionService) {
+    public CartService(
+            CartRepository cartRepository,
+            PromotionRepository promotionRepository,
+            CartItemRepository cartItemRepository,
+            ProductRepository productRepository,
+            CartItemService cartItemService,
+            PromotionService promotionService) {
         this.cartRepository = cartRepository;
         this.promotionRepository = promotionRepository;
         this.cartItemRepository = cartItemRepository;
@@ -32,7 +39,6 @@ public class CartService {
         this.promotionService = promotionService;
         this.productRepository = productRepository;
     }
-
 
     public List<CartResponse> getCarts() {
         List<Cart> carts = cartRepository.findAllWithItems();
@@ -60,13 +66,14 @@ public class CartService {
     }
 
     @Transactional
-    public AddProductToCartResponse addProductToCart(AddProductToCartRequest request, String username) throws Exception{
+    public AddProductToCartResponse addProductToCart(
+            AddProductToCartRequest request, String username) throws Exception {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
 
             // if user have cart
-            if(cartOptional.isPresent()) {
+            if (cartOptional.isPresent()) {
                 Cart cart = cartOptional.get();
 
                 // insert item to user cart
@@ -76,8 +83,9 @@ public class CartService {
 
                 // find item price from product
                 BigDecimal price = BigDecimal.ZERO;
-                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
-                if(productOptional.isPresent()) {
+                Optional<Product> productOptional =
+                        productRepository.findOneBySku(request.productSku());
+                if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
                     price = product.getPrice();
@@ -104,7 +112,8 @@ public class CartService {
                     cartRepository.save(cart);
                 }
 
-                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, subTotal);
+                AddProductToCartResponse addProductToCartResponse =
+                        new AddProductToCartResponse(username, cartItem, subTotal);
                 return addProductToCartResponse;
             } else {
                 Cart cart = new Cart();
@@ -117,8 +126,9 @@ public class CartService {
 
                 // find item price from product
                 BigDecimal price = BigDecimal.ZERO;
-                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
-                if(productOptional.isPresent()) {
+                Optional<Product> productOptional =
+                        productRepository.findOneBySku(request.productSku());
+                if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
                     price = product.getPrice();
@@ -131,7 +141,8 @@ public class CartService {
                 cartItem.setQuantity(request.quantity());
                 cartRepository.save(cart);
 
-                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, price);
+                AddProductToCartResponse addProductToCartResponse =
+                        new AddProductToCartResponse(username, cartItem, price);
                 return addProductToCartResponse;
             }
         } catch (Exception error) {
@@ -216,8 +227,3 @@ public class CartService {
         // updateGrandTotalPrice();
     }
 }
-
-
-
-
-

@@ -1,4 +1,5 @@
 package com.kampus.kbazaar.cart;
+
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,9 @@ public class CartController {
     }
 
     @PostMapping("/carts/{username}/items")
-    public AddProductToCartResponse addProductToCart(@Validated  @RequestBody AddProductToCartRequest request, @PathVariable String username) throws Exception {
-       return cartService.addProductToCart(request, username);
+    public AddProductToCartResponse addProductToCart(
+            @Validated @RequestBody AddProductToCartRequest request, @PathVariable String username)
+            throws Exception {
+        return cartService.addProductToCart(request, username);
     }
 }
