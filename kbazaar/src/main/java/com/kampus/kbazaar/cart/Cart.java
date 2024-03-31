@@ -41,7 +41,7 @@ public class Cart {
     @Column(name = "grand_total")
     private BigDecimal grandTotal;
 
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartItem> cartItems;
 
     public CartResponse toCartResponse() {
