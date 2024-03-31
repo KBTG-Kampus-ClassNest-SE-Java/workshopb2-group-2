@@ -83,7 +83,7 @@ class ProductServiceTest {
                 new Product(1L, "Pens", "STATIONERY-PEN-BIC-BALLPOINT", new BigDecimal(14.99), 100);
 
         // Mock repository method
-        when(productRepository.findBySku("STATIONERY-PEN-BIC-BALLPOINT"))
+        when(productRepository.findOneBySku("STATIONERY-PEN-BIC-BALLPOINT"))
                 .thenReturn(Optional.of(product));
 
         // Call service method
@@ -98,7 +98,7 @@ class ProductServiceTest {
     @DisplayName("should return null when get product non-existing SKU")
     void shouldReturnNullWhenGetProductNonExistingSKU() {
         // Mock repository method returning empty optional
-        when(productRepository.findBySku(anyString())).thenReturn(Optional.empty());
+        when(productRepository.findOneBySku(anyString())).thenReturn(Optional.empty());
 
         // Assertions
         assertThrows(NotFoundException.class, () -> productService.getBySku("NonExistingSKU"));
