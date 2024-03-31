@@ -103,12 +103,16 @@ public class CartService {
                     for (CartItem item : cartItems) {
                         subTotal = subTotal.add(item.getPrice());
                     }
-                    subTotal = subTotal.add(price);
+                    subTotal = subTotal.add(price.multiply(BigDecimal.valueOf(request.quantity())));
                     cart.setSubtotal(subTotal);
+                    cart.getCartItems().add(cartItem);
+                    //                    cart.setCartItems(cartItems);
                     cartRepository.save(cart);
                 } else {
-                    subTotal = price;
+                    subTotal = subTotal.add(price.multiply(BigDecimal.valueOf(request.quantity())));
                     cart.setSubtotal(price);
+                    //                    cart.setCartItems(cartItems);
+                    cart.getCartItems().add(cartItem);
                     cartRepository.save(cart);
                 }
 
@@ -131,12 +135,13 @@ public class CartService {
                     cartItem.setName(product.getName());
                     price = product.getPrice();
                     cartItem.setPrice(price);
-                    cart.setSubtotal(price);
+                    cart.setSubtotal(price.multiply(BigDecimal.valueOf(request.quantity())));
                 } else {
                     throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
+                cart.getCartItems().add(cartItem);
                 cartRepository.save(cart);
 
                 return new AddProductToCartResponse(username, cartItem, price);

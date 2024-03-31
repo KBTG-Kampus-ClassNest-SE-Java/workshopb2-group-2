@@ -1,11 +1,12 @@
 package com.kampus.kbazaar.cart;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
+import com.kampus.kbazaar.product.ProductRepository;
 import com.kampus.kbazaar.promotion.PromotionRequest;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
@@ -26,6 +27,8 @@ public class CartServiceTest {
 
     @InjectMocks @Spy private CartService cartService;
     @Mock private CartRepository cartRepository;
+    @Mock private CartItemRepository cartItemRepository;
+    @Mock private ProductRepository productRepository;
 
     @Mock private CartItemService cartItemService;
 
@@ -259,4 +262,45 @@ public class CartServiceTest {
         assertEquals(new BigDecimal(300), mockCart.getSubtotal());
         assertEquals(new BigDecimal(120), mockCart.getGrandTotal());
     }
+
+    /*
+        @Test
+        @DisplayName("add product to existing cart should return cart details")
+        public void testAddProductToExistingCart() throws Exception {
+            // Mocking repository responses
+            String username = "jill";
+            String productSku = "MOBILE-APPLE-IPHONE-12-PRO";
+            int quantity = 1;
+            BigDecimal price = BigDecimal.valueOf(20990.25);
+
+            Cart existingCart = new Cart();
+            existingCart.setUsername(username);
+            when(cartRepository.findByUsername(username)).thenReturn(Optional.of(existingCart));
+
+            Product product = new Product();
+            product.setName("Test Product");
+            product.setPrice(price);
+            when(productRepository.findOneBySku(productSku)).thenReturn(Optional.of(product));
+
+            CartItem cartItem = new CartItem();
+            cartItem.setUsername(username);
+            cartItem.setSku(productSku);
+            cartItem.setName(product.getName());
+            cartItem.setPrice(price);
+            cartItem.setQuantity(quantity);
+            when(cartItemRepository.findByUsername(username)).thenReturn(Collections.singletonList(cartItem));
+
+            // Performing the test
+            AddProductToCartRequest request = new AddProductToCartRequest(productSku, quantity);
+            AddProductToCartResponse response = cartService.addProductToCart(request, username);
+
+            // Verifying the result
+            assertNotNull(response);
+            assertEquals(username, response.username());
+            assertEquals(productSku, response.items().getSku());
+    //        assertEquals(price.multiply(BigDecimal.valueOf(quantity)), response.subtotal());
+
+            verify(cartRepository, times(1)).save(existingCart);
+        }
+        */
 }

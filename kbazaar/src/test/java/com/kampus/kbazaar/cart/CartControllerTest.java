@@ -61,4 +61,39 @@ class CartControllerTest {
     //                                .contentType(MediaType.APPLICATION_JSON))
     //                .andExpect(status().isOk());
     //    }
+
+    /*
+    @Test
+    @DisplayName("addProductTocart should return status 200 and repose cart details")
+    public void addProductToCart() throws Exception{
+        String sku = "MOBILE-APPLE-IPHONE-12-PRO";
+        String username = "Jack";
+        String productName = "Apple iPhone 12 Pro";
+        BigDecimal productPrice = BigDecimal.ZERO;
+        productPrice = productPrice.add(new BigDecimal("20990.25"));
+        BigDecimal productSubTotal = BigDecimal.ZERO;
+        productSubTotal = productSubTotal.add(productPrice);
+
+        CartItem cartItem = new CartItem();
+        cartItem.setUsername(username);
+        cartItem.setSku(sku);
+        cartItem.setName(productName);
+        cartItem.setPrice(productPrice);
+        cartItem.setQuantity(1);
+
+        AddProductToCartRequest request = new AddProductToCartRequest(sku,1);
+        AddProductToCartResponse response = new AddProductToCartResponse(username, cartItem, productSubTotal);
+
+        when(cartService.addProductToCart(any(),any())).thenReturn(response);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(response);
+
+        mockMvc.perform(post("/carts/{username}/items", username)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(jsonResponse))
+                .andExpect(status().isOk());
+    }
+     */
 }
