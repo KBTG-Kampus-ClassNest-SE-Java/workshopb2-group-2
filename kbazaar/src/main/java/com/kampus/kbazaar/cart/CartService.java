@@ -38,6 +38,7 @@ public class CartService {
         }
         return cartResponses;
     }
+    
 
     // TODO poc interface
     public BigDecimal calculateDiscountPrice(Cart cart) {
