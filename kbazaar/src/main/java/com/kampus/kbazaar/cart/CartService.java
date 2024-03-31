@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -183,10 +184,10 @@ public class CartService {
                             .setDiscount(promotionRequest.getDiscountAmount());
                     // set promotionCode to cart item
                     cartUser.getCartItems().get(i).setPromotionCodes(promotionRequest.getCode());
-                    this.cartItemService.calculateDiscountPrice(cartUser.getCartItems().get(i));
                 }
             }
         }
+        cartRepository.save(cartUser);
         this.updateSummaryPrice(cartUser.getId());
         return cartUser;
     }
@@ -196,6 +197,9 @@ public class CartService {
         BigDecimal totalDiscount = BigDecimal.ZERO;
 
         for (String promotion : promotions) {
+            if (StringUtils.isEmpty(promotion)) {
+                continue;
+            }
             PromotionResponse foundPromotion = this.promotionService.getPromotionByCode(promotion);
 
             if (foundPromotion.discountType().equals("FIXED_AMOUNT")
