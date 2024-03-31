@@ -44,7 +44,11 @@ public class CartItem {
     private BigDecimal total;
 
     @ManyToOne
-    @JoinColumn(name="username", referencedColumnName = "username", insertable = false, updatable = false)
+    @JoinColumn(
+            name = "username",
+            referencedColumnName = "username",
+            insertable = false,
+            updatable = false)
     private Cart cart;
 
     public CartItemResponse toCartItemResponse() {

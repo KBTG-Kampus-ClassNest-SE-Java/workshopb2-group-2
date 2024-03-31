@@ -3,6 +3,10 @@ package com.kampus.kbazaar.cart;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.kampus.kbazaar.promotion.Promotion;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,17 +14,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class CartServiceTest {
-
-    @Mock private CartRepository cartRepository;
+public class CartServiceTest {
 
     @InjectMocks private CartService cartService;
-
+    @Mock private CartRepository cartRepository;
     @BeforeEach
-    void setUp() {
+
+    void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
@@ -77,5 +81,29 @@ class CartServiceTest {
         assertEquals("MOBILE-SAMSUNG-GALAXY-S21-ULTRA", result.get(0).getItems().get(1).getSku());
         assertEquals("Samsung Galaxy S21 Ultra", result.get(0).getItems().get(1).getName());
         assertEquals(new BigDecimal(39980.25), result.get(0).getGrandTotal());
+    }
+
+    @DisplayName("Should return cart that already updated!")
+    void shouldBeAbleToGetUpdateProductItems() {
+        Promotion promotion = new Promotion();
+        promotion.setCode("FIXEDAMOUNT2");
+        promotion.setProductSkus("STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
+        promotion.setDiscountAmount(new BigDecimal(2));
+
+        CartItem cartItem = new CartItem();
+        cartItem.setId(1L);
+        cartItem.setSku("STATIONERY-STAPLER-SWINGLINE");
+        cartItem.setDiscount(new BigDecimal(0));
+        cartItem.setPromotionCodes("");
+        List<CartItem> cartItemsList = new ArrayList<>();
+        cartItemsList.add(cartItem);
+
+        Cart cart = new Cart();
+        cart.setCartItems(cartItemsList);
+
+        Cart cartResult = cartService.AppliedSpecificPromotion(cart, promotion);
+
+        assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
+        assertEquals("FIXEDAMOUNT2", cartResult.getCartItems().get(0).getPromotionCodes());
     }
 }
