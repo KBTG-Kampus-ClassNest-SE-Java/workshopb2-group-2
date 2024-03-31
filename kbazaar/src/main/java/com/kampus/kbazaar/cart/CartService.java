@@ -2,6 +2,7 @@ package com.kampus.kbazaar.cart;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
 import com.kampus.kbazaar.exceptions.InternalServerException;
+import com.kampus.kbazaar.exceptions.NotFoundException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
 import com.kampus.kbazaar.promotion.Promotion;
@@ -77,7 +78,7 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
+                BigDecimal price;
                 Optional<Product> productOptional =
                         productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
@@ -86,7 +87,7 @@ public class CartService {
                     price = product.getPrice();
                     cartItem.setPrice(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
@@ -107,9 +108,7 @@ public class CartService {
                     cartRepository.save(cart);
                 }
 
-                AddProductToCartResponse addProductToCartResponse =
-                        new AddProductToCartResponse(username, cartItem, subTotal);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, subTotal);
             } else {
                 Cart cart = new Cart();
                 cart.setUsername(username);
@@ -120,7 +119,7 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
+                BigDecimal price;
                 Optional<Product> productOptional =
                         productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
@@ -130,15 +129,13 @@ public class CartService {
                     cartItem.setPrice(price);
                     cart.setSubtotal(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
                 cartRepository.save(cart);
 
-                AddProductToCartResponse addProductToCartResponse =
-                        new AddProductToCartResponse(username, cartItem, price);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, price);
             }
         } catch (Exception error) {
             throw new InternalServerException("internal server error");
