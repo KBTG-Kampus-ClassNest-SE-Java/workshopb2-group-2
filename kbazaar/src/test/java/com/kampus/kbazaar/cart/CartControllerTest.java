@@ -42,7 +42,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("should return all cart")
-    public void getCart_ReturnsAllCart() throws Exception {
+    void getCart_ReturnsAllCart() throws Exception {
 
         CartResponse cartResponse = new CartResponse();
         cartResponse.setUsername("Boss");

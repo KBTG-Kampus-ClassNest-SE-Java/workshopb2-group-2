@@ -1,6 +1,5 @@
 package com.kampus.kbazaar.cart;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -15,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class CartServiceTest {
+class CartServiceTest {
 
     @InjectMocks private CartService cartService;
     @Mock private CartRepository cartRepository;

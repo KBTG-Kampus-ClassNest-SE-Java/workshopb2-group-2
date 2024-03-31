@@ -63,7 +63,7 @@ public class CartService {
 
     @Transactional
     public AddProductToCartResponse addProductToCart(
-            AddProductToCartRequest request, String username) throws Exception {
+            AddProductToCartRequest request, String username) {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
@@ -157,7 +157,6 @@ public class CartService {
                 }
             }
         }
-        System.out.println(cartUser);
         return cartUser;
     }
 
