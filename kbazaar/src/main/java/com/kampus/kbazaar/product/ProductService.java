@@ -23,7 +23,7 @@ public class ProductService {
     }
 
     public ProductResponse getBySku(String sku) {
-        Optional<Product> product = productRepository.findBySku(sku);
+        Optional<Product> product = productRepository.findOneBySku(sku);
         if (product.isEmpty()) {
             throw new NotFoundException("Product not found");
         }

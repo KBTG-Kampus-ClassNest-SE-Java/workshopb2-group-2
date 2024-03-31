@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.kampus.kbazaar.security.JwtAuthFilter;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,4 +43,8 @@ public class CartControllerTest {
         mockMvc.perform(get("/api/v1/carts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
+//    @Test
+//    @DisplayName("when POST: /carts/{username}/items should return status 201 and return cart details")
+//    public void addItemToCart
 }

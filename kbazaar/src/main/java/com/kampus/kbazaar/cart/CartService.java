@@ -1,24 +1,33 @@
 package com.kampus.kbazaar.cart;
 
-import com.kampus.kbazaar.exceptions.NotFoundException;
+import com.kampus.kbazaar.exceptions.InternalServerException;
+import com.kampus.kbazaar.product.Product;
+import com.kampus.kbazaar.product.ProductRepository;
+import com.kampus.kbazaar.promotion.PromotionRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.ArrayList;
 
 import lombok.val;
-import org.springframework.stereotype.Service;
 
 @Service
 public class CartService {
+    private final CartRepository cartRepository;
+    private final PromotionRepository promotionRepository;
+    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
 
-    private CartRepository cartRepository;
-    private CartItemRepository cartItemRepository;
-
-    public CartService(CartRepository cartRepository, CartItemRepository cartItemRepository) {
+    public CartService(CartRepository cartRepository, PromotionRepository promotionRepository, CartItemRepository cartItemRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
+        this.promotionRepository = promotionRepository;
         this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
     }
+
 
     public List<CartResponse> getCarts() {
         List<Cart> carts = cartRepository.findAllWithItems();
@@ -37,6 +46,88 @@ public class CartService {
             cartResponses.add(cartResponse);
         }
         return cartResponses;
+    }
+
+    @Transactional
+    public AddProductToCartResponse addProductToCart(AddProductToCartRequest request, String username) throws Exception{
+        try {
+            // check user cart is exist
+            Optional<Cart> cartOptional = cartRepository.findByUsername(username);
+
+            // if user have cart
+            if(cartOptional.isPresent()) {
+                Cart cart = cartOptional.get();
+
+                // insert item to user cart
+                CartItem cartItem = new CartItem();
+                cartItem.setUsername(username);
+                cartItem.setSku(request.productSku());
+
+                // find item price from product
+                BigDecimal price = BigDecimal.ZERO;
+                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
+                if(productOptional.isPresent()) {
+                    Product product = productOptional.get();
+                    cartItem.setName(product.getName());
+                    price = product.getPrice();
+                    cartItem.setPrice(price);
+                } else {
+                    throw new Exception("price not found");
+                }
+
+                cartItem.setQuantity(request.quantity());
+
+                // summarize sub-total and grand-total for user cart
+                List<CartItem> cartItems = cartItemRepository.findByUsername(username);
+                BigDecimal subTotal = BigDecimal.ZERO;
+                if (!cartItems.isEmpty()) {
+                    for (CartItem item : cartItems) {
+                        subTotal = subTotal.add(item.getPrice());
+                    }
+                    subTotal = subTotal.add(price);
+                    cart.setSubtotal(subTotal);
+                    cartRepository.save(cart);
+                } else {
+                    subTotal = price;
+                    cart.setSubtotal(price);
+                    cartRepository.save(cart);
+                }
+
+                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, subTotal);
+                return addProductToCartResponse;
+            } else {
+                Cart cart = new Cart();
+                cart.setUsername(username);
+
+                // insert item to user cart
+                CartItem cartItem = new CartItem();
+                cartItem.setUsername(username);
+                cartItem.setSku(request.productSku());
+
+                // find item price from product
+                BigDecimal price = BigDecimal.ZERO;
+                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
+                if(productOptional.isPresent()) {
+                    Product product = productOptional.get();
+                    cartItem.setName(product.getName());
+                    price = product.getPrice();
+                    cartItem.setPrice(price);
+                    cart.setSubtotal(price);
+                } else {
+                    throw new Exception("price not found");
+                }
+
+
+
+                cartItem.setQuantity(request.quantity());
+                cartRepository.save(cart);
+
+                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, price);
+                return addProductToCartResponse;
+            }
+        } catch (Exception error) {
+            throw new InternalServerException("internal server error");
+        }
     }
 
     // TODO poc interface
@@ -60,3 +151,8 @@ public class CartService {
         // updateGrandTotalPrice();
     }
 }
+
+
+
+
+
