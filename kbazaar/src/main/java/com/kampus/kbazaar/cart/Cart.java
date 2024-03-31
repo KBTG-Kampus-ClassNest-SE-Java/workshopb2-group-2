@@ -36,4 +36,60 @@ public class Cart {
     @Description("the final, all-inclusive amount to be paid.")
     @Column(name = "grand_total")
     private BigDecimal grandTotal;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
+    public BigDecimal getTotalDiscount() {
+        return totalDiscount;
+    }
+
+    public void setTotalDiscount(BigDecimal totalDiscount) {
+        this.totalDiscount = totalDiscount;
+    }
+
+    public String getPromotionCodes() {
+        return promotionCodes;
+    }
+
+    public void setPromotionCodes(String promotionCodes) {
+        this.promotionCodes = promotionCodes;
+    }
+
+    public BigDecimal getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
+    }
+
+    public BigDecimal getGrandTotal() {
+        return grandTotal;
+    }
+
+    public void setGrandTotal(BigDecimal grandTotal) {
+        this.grandTotal = grandTotal;
+    }
 }
