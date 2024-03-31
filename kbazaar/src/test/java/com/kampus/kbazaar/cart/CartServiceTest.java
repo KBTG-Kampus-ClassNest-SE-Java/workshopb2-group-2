@@ -38,14 +38,7 @@ public class CartServiceTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
-
-<<<<<<< HEAD
-    //    @Test
-    //    @DisplayName("Should be success to add product")
-=======
-//    @Test
-//    @DisplayName("Should be success to add product")
-
+    
     @Test
     @DisplayName("Should return cart that already updated!")
     void shouldBeAbleToGetUpdateProductItems() {
@@ -70,5 +63,5 @@ public class CartServiceTest {
         assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
         assertEquals("FIXEDAMOUNT2", cartResult.getCartItems().get(0).getPromotionCodes());
     }
->>>>>>> bf71f61 (create test to pass of update specific promotion code)
+
 }
