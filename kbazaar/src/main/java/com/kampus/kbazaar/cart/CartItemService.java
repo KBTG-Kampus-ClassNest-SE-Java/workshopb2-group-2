@@ -2,8 +2,11 @@ package com.kampus.kbazaar.cart;
 
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 
+@Service
 public class CartItemService {
 
     private final PromotionService promotionService;

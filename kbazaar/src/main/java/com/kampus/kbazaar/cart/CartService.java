@@ -13,10 +13,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
@@ -38,7 +42,7 @@ public class CartService {
     }
 
     public List<CartResponse> getCarts() {
-        List<Cart> carts = cartRepository.findAllWithItems();
+        List<Cart> carts = cartRepository.findAll();
         val cartResponses = new ArrayList<CartResponse>();
 
         for (Cart cart : carts) {
@@ -143,8 +147,9 @@ public class CartService {
     }
 
     public CartResponse applyPromotion(PromotionRequest promotionRequest, String username) {
-        Optional<Cart> cartOptional = cartRepository.findAllWithItemsByUsername(username);
+        Optional<Cart> cartOptional = cartRepository.findByUsername(username);
         if (cartOptional.isEmpty()) {
+            log.error("cart not found");
             throw new NotFoundException("cart not found");
         }
         Cart cart = cartOptional.get();
@@ -159,7 +164,10 @@ public class CartService {
     public CartResponse applyCartPromotion(Cart cart, String code) {
         List<String> allPromotion = new ArrayList<>(List.of(cart.getPromotionCodes().split(",")));
         allPromotion.add(code);
-        cart.setPromotionCodes(allPromotion.toString());
+        String result = allPromotion.stream()
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(","));
+        cart.setPromotionCodes(result);
         cartRepository.save(cart);
         Cart updatedCart = updateSummaryPrice(cart.getId());
         return updatedCart.toCartResponse();
