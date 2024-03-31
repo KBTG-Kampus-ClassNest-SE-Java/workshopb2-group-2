@@ -1,11 +1,8 @@
 package com.kampus.kbazaar.cart;
 
-import com.kampus.kbazaar.exceptions.NotFoundException;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.val;
 import org.springframework.stereotype.Service;
 
