@@ -44,9 +44,6 @@ class CartControllerTest {
     @Test
     @DisplayName("should return all cart")
     void getCart_ReturnsAllCart() throws Exception {
-
-        CartResponse cartResponse = new CartResponse();
-        cartResponse.setUsername("Boss");
         // Set other properties as needed
 
         when(cartService.getCarts()).thenReturn(new ArrayList<CartResponse>());
