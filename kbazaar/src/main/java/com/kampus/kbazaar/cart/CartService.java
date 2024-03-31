@@ -2,8 +2,14 @@ package com.kampus.kbazaar.cart;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+<<<<<<< HEAD
+=======
+
+import com.kampus.kbazaar.promotion.Promotion;
+>>>>>>> bf71f61 (create test to pass of update specific promotion code)
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +48,26 @@ public class CartService {
         Optional<Cart> cartUser = cartRepository.findAllWithItemsByUsername(username);
         return cartUser;
     }
+
+
+    // this method will update cart items of user
+    public Cart AppliedSpecificPromotion(Cart cartUser, Promotion promotionRequest){
+        String[] productSkuArray = promotionRequest.getProductSkus().split(",");
+        for(int i = 0 ; i < cartUser.getCartItems().size(); i++){
+            for(String productSku : productSkuArray) {
+                if(cartUser.getCartItems().get(i).getSku().contains(productSku)){
+                    // set discount to promotion discount
+                    cartUser.getCartItems().get(i).setDiscount(promotionRequest.getDiscountAmount());
+                    // set promotionCode to cart item
+                    cartUser.getCartItems().get(i).setPromotionCodes(promotionRequest.getCode());
+                }
+            }
+        }
+        System.out.println(cartUser);
+        return  cartUser;
+
+    }
+    
 
     // TODO poc interface
     public BigDecimal calculateDiscountPrice(Cart cart) {
