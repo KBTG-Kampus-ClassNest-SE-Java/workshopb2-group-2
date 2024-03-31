@@ -1,7 +1,6 @@
 package com.kampus.kbazaar.promotion;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 
 public class PromotionRequest {
@@ -17,9 +16,16 @@ public class PromotionRequest {
     private String productSkus;
 
     // Constructor
-    public PromotionRequest(String code, String name, String description, LocalDateTime startDate,
-                   LocalDateTime endDate, String discountType, BigDecimal discountAmount,
-                   String applicableTo, String productSkus) {
+    public PromotionRequest(
+            String code,
+            String name,
+            String description,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String discountType,
+            BigDecimal discountAmount,
+            String applicableTo,
+            String productSkus) {
         this.code = code;
         this.name = name;
         this.description = description;
@@ -107,18 +113,31 @@ public class PromotionRequest {
     // toString method to represent object as a String
     @Override
     public String toString() {
-        return "Request{" +
-                "code='" + code + '\'' +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", discountType='" + discountType + '\'' +
-                ", discountAmount=" + discountAmount +
-                ", applicableTo='" + applicableTo + '\'' +
-                ", productSkus='" + productSkus + '\'' +
-                '}';
+        return "Request{"
+                + "code='"
+                + code
+                + '\''
+                + ", name='"
+                + name
+                + '\''
+                + ", description='"
+                + description
+                + '\''
+                + ", startDate="
+                + startDate
+                + ", endDate="
+                + endDate
+                + ", discountType='"
+                + discountType
+                + '\''
+                + ", discountAmount="
+                + discountAmount
+                + ", applicableTo='"
+                + applicableTo
+                + '\''
+                + ", productSkus='"
+                + productSkus
+                + '\''
+                + '}';
     }
-
-
 }

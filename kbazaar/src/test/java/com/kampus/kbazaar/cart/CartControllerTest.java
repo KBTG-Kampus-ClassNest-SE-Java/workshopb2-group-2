@@ -43,7 +43,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("should return all cart")
-    public void getCart_ReturnsAllCart() throws Exception {
+    void getCart_ReturnsAllCart() throws Exception {
 
         CartResponse cartResponse = new CartResponse();
         cartResponse.setUsername("Boss");
@@ -59,7 +59,9 @@ public class CartControllerTest {
 
     @Test
     public void shouldReturnsOkWhenApplyPromoCode() throws Exception {
-        mockMvc.perform(post("/api/v1/carts/userTest/promotions").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                        post("/api/v1/carts/userTest/promotions")
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 }

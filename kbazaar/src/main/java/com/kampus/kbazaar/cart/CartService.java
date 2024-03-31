@@ -1,11 +1,11 @@
 package com.kampus.kbazaar.cart;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
-import com.kampus.kbazaar.promotion.*;
 import com.kampus.kbazaar.exceptions.InternalServerException;
+import com.kampus.kbazaar.exceptions.NotFoundException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
-import com.kampus.kbazaar.exceptions.NotFoundException;
+import com.kampus.kbazaar.promotion.*;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
@@ -63,7 +63,7 @@ public class CartService {
 
     @Transactional
     public AddProductToCartResponse addProductToCart(
-            AddProductToCartRequest request, String username) throws Exception {
+            AddProductToCartRequest request, String username) {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
@@ -142,21 +142,21 @@ public class CartService {
         }
     }
 
-    public CartResponse applyPromotion(PromotionRequest promotionRequest, String username){
+    public CartResponse applyPromotion(PromotionRequest promotionRequest, String username) {
         Optional<Cart> cartOptional = cartRepository.findAllWithItemsByUsername(username);
         if (cartOptional.isEmpty()) {
             throw new NotFoundException("cart not found");
         }
         Cart cart = cartOptional.get();
 
-        if("ENTIRE_CART".equals(promotionRequest.getApplicableTo())){
-            return applyCartPromotion(cart, promotionRequest.getCode())  ;
+        if ("ENTIRE_CART".equals(promotionRequest.getApplicableTo())) {
+            return applyCartPromotion(cart, promotionRequest.getCode());
         } else {
-           return appliedSpecificPromotion(cart, promotionRequest).toCartResponse();
+            return appliedSpecificPromotion(cart, promotionRequest).toCartResponse();
         }
     }
 
-    public CartResponse applyCartPromotion(Cart cart, String code){
+    public CartResponse applyCartPromotion(Cart cart, String code) {
         List<String> allPromotion = new ArrayList<>(List.of(cart.getPromotionCodes().split(",")));
         allPromotion.add(code);
         cart.setPromotionCodes(allPromotion.toString());
@@ -164,7 +164,6 @@ public class CartService {
         Cart updatedCart = updateSummaryPrice(cart.getId());
         return updatedCart.toCartResponse();
     }
-
 
     // this method will update cart items of user
     public Cart appliedSpecificPromotion(Cart cartUser, PromotionRequest promotionRequest) {
@@ -181,7 +180,6 @@ public class CartService {
                 }
             }
         }
-        System.out.println(cartUser);
         return cartUser;
     }
 

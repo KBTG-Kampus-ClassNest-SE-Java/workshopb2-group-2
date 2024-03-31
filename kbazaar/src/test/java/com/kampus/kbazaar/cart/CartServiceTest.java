@@ -4,11 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.kampus.kbazaar.promotion.Promotion;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,10 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class CartServiceTest {
-    @InjectMocks
-    private CartService cartService;
-    @Mock
-    private CartRepository cartRepository;
+    @InjectMocks private CartService cartService;
+    @Mock private CartRepository cartRepository;
 
     @BeforeEach
     void setup() {
@@ -100,17 +96,18 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-//        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
-//
-//        assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
-//        assertEquals("FIXEDAMOUNT2", cartResult.getCartItems().get(0).getPromotionCodes());
+        //        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
+        //
+        //        assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
+        //        assertEquals("FIXEDAMOUNT2",
+        // cartResult.getCartItems().get(0).getPromotionCodes());
 
     }
 
     @Test
     @DisplayName("Should return cart that applay promotion")
     public void applyPromotion() {
-//        cartService.applyPromotion("test-user", "ABC");
+        //        cartService.applyPromotion("test-user", "ABC");
     }
 
     @Test
@@ -133,9 +130,9 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-//        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
-//
-//        assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
-//        assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
+        //        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
+        //
+        //        assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
+        //        assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
     }
 }
