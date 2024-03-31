@@ -5,6 +5,7 @@ import com.kampus.kbazaar.exceptions.NotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,13 @@ public class CartService {
         }
         return cartResponses;
     }
-    
+
+    // this method will find cart by username
+    public Optional<Cart> getCartByUsername(String username){
+        Optional<Cart> cartUser = cartRepository.findAllWithItemsByUsername(username);
+        return  cartUser;
+    }
+
 
     // TODO poc interface
     public BigDecimal calculateDiscountPrice(Cart cart) {
