@@ -112,4 +112,30 @@ public class CartServiceTest {
     public void applyPromotion() {
 //        cartService.applyPromotion("test-user", "ABC");
     }
+
+    @Test
+    @DisplayName("should return cart's item price that not discount")
+    void shouldBeNotUpdateCartItemPrice() {
+        Promotion promotion = new Promotion();
+        promotion.setCode("FIXEDAMOUNT2");
+        promotion.setProductSkus("STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
+        promotion.setDiscountAmount(new BigDecimal(2));
+
+        // product sku not match to promotion code
+        CartItem cartItem = new CartItem();
+        cartItem.setId(1L);
+        cartItem.setSku("STATIONERY-NOTEBOOK-MOLESKINE");
+        cartItem.setDiscount(new BigDecimal(0));
+        cartItem.setPromotionCodes("");
+        List<CartItem> cartItemsList = new ArrayList<>();
+        cartItemsList.add(cartItem);
+
+        Cart cart = new Cart();
+        cart.setCartItems(cartItemsList);
+
+//        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
+//
+//        assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
+//        assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
+    }
 }

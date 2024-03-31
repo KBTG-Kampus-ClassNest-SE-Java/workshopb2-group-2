@@ -1,37 +1,41 @@
 package com.kampus.kbazaar.cart;
+
 import com.kampus.kbazaar.exceptions.BadRequestException;
 import com.kampus.kbazaar.promotion.*;
 import com.kampus.kbazaar.exceptions.InternalServerException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
+import com.kampus.kbazaar.exceptions.NotFoundException;
+import com.kampus.kbazaar.promotion.PromotionResponse;
+import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
-
-import com.kampus.kbazaar.exceptions.NotFoundException;
 import lombok.val;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CartService {
     private final CartRepository cartRepository;
-    private final PromotionRepository promotionRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final CartItemService cartItemService;
     private final PromotionService promotionService;
 
-    public CartService(CartRepository cartRepository, PromotionRepository promotionRepository, CartItemRepository cartItemRepository, ProductRepository productRepository, CartItemService cartItemService, PromotionService promotionService) {
+    public CartService(
+            CartRepository cartRepository,
+            CartItemRepository cartItemRepository,
+            ProductRepository productRepository,
+            CartItemService cartItemService,
+            PromotionService promotionService) {
         this.cartRepository = cartRepository;
-        this.promotionRepository = promotionRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartItemService = cartItemService;
         this.promotionService = promotionService;
         this.productRepository = productRepository;
     }
-
 
     public List<CartResponse> getCarts() {
         List<Cart> carts = cartRepository.findAllWithItems();
@@ -54,12 +58,12 @@ public class CartService {
 
     // this method will find cart by username
     public Optional<Cart> getCartByUsername(String username) {
-        Optional<Cart> cartUser = cartRepository.findAllWithItemsByUsername(username);
-        return cartUser;
+        return cartRepository.findAllWithItemsByUsername(username);
     }
 
     @Transactional
-    public AddProductToCartResponse addProductToCart(AddProductToCartRequest request, String username) throws Exception {
+    public AddProductToCartResponse addProductToCart(
+            AddProductToCartRequest request, String username) throws Exception {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
@@ -74,15 +78,16 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
-                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
+                BigDecimal price;
+                Optional<Product> productOptional =
+                        productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
                     price = product.getPrice();
                     cartItem.setPrice(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
@@ -103,8 +108,7 @@ public class CartService {
                     cartRepository.save(cart);
                 }
 
-                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, subTotal);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, subTotal);
             } else {
                 Cart cart = new Cart();
                 cart.setUsername(username);
@@ -115,8 +119,9 @@ public class CartService {
                 cartItem.setSku(request.productSku());
 
                 // find item price from product
-                BigDecimal price = BigDecimal.ZERO;
-                Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
+                BigDecimal price;
+                Optional<Product> productOptional =
+                        productRepository.findOneBySku(request.productSku());
                 if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
@@ -124,14 +129,13 @@ public class CartService {
                     cartItem.setPrice(price);
                     cart.setSubtotal(price);
                 } else {
-                    throw new Exception("price not found");
+                    throw new NotFoundException("Product not found");
                 }
 
                 cartItem.setQuantity(request.quantity());
                 cartRepository.save(cart);
 
-                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse(username, cartItem, price);
-                return addProductToCartResponse;
+                return new AddProductToCartResponse(username, cartItem, price);
             }
         } catch (Exception error) {
             throw new InternalServerException("internal server error");
@@ -181,7 +185,6 @@ public class CartService {
         return cartUser;
     }
 
-    // TODO poc interface
     public BigDecimal calculateDiscountPrice(Cart cart) {
         String[] promotions = cart.getPromotionCodes().split(",");
         BigDecimal totalDiscount = BigDecimal.ZERO;
@@ -230,17 +233,4 @@ public class CartService {
 
         return cartRepository.save(cart);
     }
-
-    // example add product to cart
-    public void addSkuToCart(String username, String skuCode) {
-        // do insert cart item by username
-        // val cart = cartRepository.save(entity);
-        // val grandTotalPrice = calculateGrandTotalPrice(cart);
-        // updateGrandTotalPrice();
-    }
 }
-
-
-
-
-
