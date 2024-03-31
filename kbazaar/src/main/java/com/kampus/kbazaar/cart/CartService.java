@@ -193,6 +193,7 @@ public class CartService {
         BigDecimal subTotal = BigDecimal.ZERO;
 
         for (val cartItem : cart.getCartItems()) {
+            // cal()
             val totalCartItemDiscount = cartItemService.calculateDiscountPrice(cartItem);
 
             cartItem.setDiscount(totalCartItemDiscount);

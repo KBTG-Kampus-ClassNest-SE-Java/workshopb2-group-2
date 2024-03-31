@@ -2,23 +2,36 @@ package com.kampus.kbazaar.cart;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+import com.kampus.kbazaar.exceptions.BadRequestException;
 import com.kampus.kbazaar.promotion.Promotion;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.kampus.kbazaar.promotion.PromotionResponse;
+import com.kampus.kbazaar.promotion.PromotionService;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 public class CartServiceTest {
 
-    @InjectMocks private CartService cartService;
+    @InjectMocks @Spy private CartService cartService;
     @Mock private CartRepository cartRepository;
+
+    @Mock private CartItemService cartItemService;
+
+    @Mock private PromotionService promotionService;
 
     @BeforeEach
     void setup() {
@@ -128,5 +141,104 @@ public class CartServiceTest {
 
         assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
         assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
+    }
+
+    @Test
+    void updateSummaryPrice_ShouldThrowBadRequest_WhenCartNotFound() {
+        // arrange
+        val mockId = 1L;
+        when(this.cartRepository.findById(any())).thenReturn(Optional.empty());
+
+        // act
+        val thrown = assertThrows(BadRequestException.class, () -> {
+            this.cartService.updateSummaryPrice(mockId);
+        });
+
+        // assert
+        assertEquals("Cart id not found.", thrown.getMessage());
+        verify(this.cartRepository.findById(mockId));
+    }
+
+    @Test
+    void updateSummaryPrice_ShouldSuccess_WhenRequestIsCorrect() {
+        // arrange
+        val mockId = 1L;
+        val mockCart = new Cart();
+        mockCart.setPromotionCodes("A,B");
+
+        val mockCartItem1 = new CartItem();
+        mockCartItem1.setPrice(new BigDecimal(200));
+
+        val mockCartItem2 = new CartItem();
+        mockCartItem2.setPrice(new BigDecimal(100));
+
+        val mockPromotion1 = new PromotionResponse(
+                1L,
+                "A",
+                "AAA",
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                "FIXED_AMOUNT",
+                new BigDecimal(10),
+                BigDecimal.ZERO,
+                "ENTIRE_CART",
+                List.of(""),
+                1,
+                2
+        );
+
+        val mockPromotion2 = new PromotionResponse(
+                2L,
+                "B",
+                "BBB",
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                "FIXED_AMOUNT",
+                new BigDecimal(20),
+                BigDecimal.ZERO,
+                "ENTIRE_CART",
+                List.of(""),
+                1,
+                2
+        );
+
+        val mockPromotion3 = new PromotionResponse(
+                3L,
+                "C",
+                "CCC",
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                "FIXED_AMOUNT",
+                new BigDecimal(30),
+                BigDecimal.ZERO,
+                "ENTIRE_CART",
+                List.of(""),
+                1,
+                2
+        );
+
+        mockCart.setCartItems(List.of(mockCartItem1, mockCartItem2));
+
+        when(this.cartRepository.findById(any())).thenReturn(Optional.of(mockCart));
+        when(this.promotionService.getPromotionByCode("A")).thenReturn(mockPromotion1);
+        when(this.promotionService.getPromotionByCode("B")).thenReturn(mockPromotion2);
+        when(this.promotionService.getPromotionByCode("C")).thenReturn(mockPromotion3);
+        when(this.cartItemService.calculateDiscountPrice(mockCartItem1)).thenReturn(new BigDecimal(50));
+        when(this.cartItemService.calculateDiscountPrice(mockCartItem2)).thenReturn(new BigDecimal(100));
+        when(this.cartRepository.save(any())).thenReturn(mockCart);
+
+        // act
+        val res = this.cartService.updateSummaryPrice(mockId);
+
+        // assert
+        assertEquals(mockCart, res);
+        verify(this.cartService).calculateDiscountPrice(mockCart);
+        assertEquals(new BigDecimal(30), mockCart.getDiscount());
+        assertEquals(new BigDecimal(150), mockCart.getTotalDiscount());
+        assertEquals(new BigDecimal(300), mockCart.getSubtotal());
+        assertEquals(new BigDecimal(120), mockCart.getGrandTotal());
     }
 }
