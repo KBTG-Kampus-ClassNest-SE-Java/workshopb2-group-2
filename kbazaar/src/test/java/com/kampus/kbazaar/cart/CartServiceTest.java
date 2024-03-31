@@ -5,11 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
+import com.kampus.kbazaar.product.ProductRepository;
 import com.kampus.kbazaar.promotion.PromotionRequest;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
-
-import com.kampus.kbazaar.product.ProductRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
