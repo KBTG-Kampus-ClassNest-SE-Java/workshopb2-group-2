@@ -1,18 +1,17 @@
 package com.kampus.kbazaar.cart;
 import com.kampus.kbazaar.exceptions.BadRequestException;
-import com.kampus.kbazaar.promotion.Promotion;
-import com.kampus.kbazaar.promotion.PromotionResponse;
-import com.kampus.kbazaar.promotion.PromotionService;
+import com.kampus.kbazaar.promotion.*;
 import com.kampus.kbazaar.exceptions.InternalServerException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
-import com.kampus.kbazaar.promotion.PromotionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
+
+import com.kampus.kbazaar.exceptions.NotFoundException;
 import lombok.val;
 
 @Service
@@ -60,13 +59,13 @@ public class CartService {
     }
 
     @Transactional
-    public AddProductToCartResponse addProductToCart(AddProductToCartRequest request, String username) throws Exception{
+    public AddProductToCartResponse addProductToCart(AddProductToCartRequest request, String username) throws Exception {
         try {
             // check user cart is exist
             Optional<Cart> cartOptional = cartRepository.findByUsername(username);
 
             // if user have cart
-            if(cartOptional.isPresent()) {
+            if (cartOptional.isPresent()) {
                 Cart cart = cartOptional.get();
 
                 // insert item to user cart
@@ -77,7 +76,7 @@ public class CartService {
                 // find item price from product
                 BigDecimal price = BigDecimal.ZERO;
                 Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
-                if(productOptional.isPresent()) {
+                if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
                     price = product.getPrice();
@@ -118,7 +117,7 @@ public class CartService {
                 // find item price from product
                 BigDecimal price = BigDecimal.ZERO;
                 Optional<Product> productOptional = productRepository.findOneBySku(request.productSku());
-                if(productOptional.isPresent()) {
+                if (productOptional.isPresent()) {
                     Product product = productOptional.get();
                     cartItem.setName(product.getName());
                     price = product.getPrice();
@@ -139,8 +138,32 @@ public class CartService {
         }
     }
 
+    public CartResponse applyPromotion(PromotionRequest promotionRequest, String username){
+        Optional<Cart> cartOptional = cartRepository.findAllWithItemsByUsername(username);
+        if (cartOptional.isEmpty()) {
+            throw new NotFoundException("cart not found");
+        }
+        Cart cart = cartOptional.get();
+
+        if("ENTIRE_CART".equals(promotionRequest.getApplicableTo())){
+            return applyCartPromotion(cart, promotionRequest.getCode())  ;
+        } else {
+           return appliedSpecificPromotion(cart, promotionRequest).toCartResponse();
+        }
+    }
+
+    public CartResponse applyCartPromotion(Cart cart, String code){
+        List<String> allPromotion = new ArrayList<>(List.of(cart.getPromotionCodes().split(",")));
+        allPromotion.add(code);
+        cart.setPromotionCodes(allPromotion.toString());
+        cartRepository.save(cart);
+        Cart updatedCart = updateSummaryPrice(cart.getId());
+        return updatedCart.toCartResponse();
+    }
+
+
     // this method will update cart items of user
-    public Cart AppliedSpecificPromotion(Cart cartUser, Promotion promotionRequest) {
+    public Cart appliedSpecificPromotion(Cart cartUser, PromotionRequest promotionRequest) {
         String[] productSkuArray = promotionRequest.getProductSkus().split(",");
         for (int i = 0; i < cartUser.getCartItems().size(); i++) {
             for (String productSku : productSkuArray) {

@@ -2,6 +2,7 @@ package com.kampus.kbazaar.cart;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.kampus.kbazaar.security.JwtAuthFilter;
@@ -56,7 +57,9 @@ public class CartControllerTest {
         verify(cartService, times(1)).getCarts();
     }
 
-//    @Test
-//    @DisplayName("when POST: /carts/{username}/items should return status 201 and return cart details")
-//    public void addItemToCart
+    @Test
+    public void shouldReturnsOkWhenApplyPromoCode() throws Exception {
+        mockMvc.perform(post("/api/v1/carts/userTest/promotions").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 }
