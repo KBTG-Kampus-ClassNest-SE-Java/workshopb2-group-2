@@ -5,7 +5,7 @@ import com.kampus.kbazaar.exceptions.InternalServerException;
 import com.kampus.kbazaar.exceptions.NotFoundException;
 import com.kampus.kbazaar.product.Product;
 import com.kampus.kbazaar.product.ProductRepository;
-import com.kampus.kbazaar.promotion.*;
+import com.kampus.kbazaar.promotion.PromotionRequest;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import jakarta.transaction.Transactional;
@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
@@ -164,9 +163,8 @@ public class CartService {
     public CartResponse applyCartPromotion(Cart cart, String code) {
         List<String> allPromotion = new ArrayList<>(List.of(cart.getPromotionCodes().split(",")));
         allPromotion.add(code);
-        String result = allPromotion.stream()
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.joining(","));
+        String result =
+                allPromotion.stream().filter(s -> !s.isEmpty()).collect(Collectors.joining(","));
         cart.setPromotionCodes(result);
         cartRepository.save(cart);
         Cart updatedCart = updateSummaryPrice(cart.getId());
@@ -185,9 +183,11 @@ public class CartService {
                             .setDiscount(promotionRequest.getDiscountAmount());
                     // set promotionCode to cart item
                     cartUser.getCartItems().get(i).setPromotionCodes(promotionRequest.getCode());
+                    this.cartItemService.calculateDiscountPrice(cartUser.getCartItems().get(i));
                 }
             }
         }
+        this.updateSummaryPrice(cartUser.getId());
         return cartUser;
     }
 

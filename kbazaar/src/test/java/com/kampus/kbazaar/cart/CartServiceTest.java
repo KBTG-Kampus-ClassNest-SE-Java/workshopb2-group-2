@@ -6,17 +6,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.kampus.kbazaar.exceptions.BadRequestException;
+import com.kampus.kbazaar.promotion.PromotionRequest;
+import com.kampus.kbazaar.promotion.PromotionResponse;
+import com.kampus.kbazaar.promotion.PromotionService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.kampus.kbazaar.promotion.PromotionResponse;
-import com.kampus.kbazaar.promotion.PromotionService;
 import lombok.val;
-
-import com.kampus.kbazaar.promotion.PromotionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +25,7 @@ import org.mockito.Spy;
 
 public class CartServiceTest {
 
-    @InjectMocks @Spy
-    private CartService cartService;
+    @InjectMocks @Spy private CartService cartService;
     @Mock private CartRepository cartRepository;
 
     @Mock private CartItemService cartItemService;
@@ -97,17 +94,17 @@ public class CartServiceTest {
 
     @DisplayName("Should return cart that already updated!")
     void shouldBeAbleToGetUpdateProductItems() {
-        PromotionRequest promotion = new PromotionRequest(
-                "FIXEDAMOUNT2",
-                "Fixed Amount $2 Off Specific Products",
-                "Get $2 off on specific products.",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(30),
-                "FIXED_AMOUNT",
-                new BigDecimal(2),
-                "SPECIFIC_PRODUCTS",
-                "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL"
-        );
+        PromotionRequest promotion =
+                new PromotionRequest(
+                        "FIXEDAMOUNT2",
+                        "Fixed Amount $2 Off Specific Products",
+                        "Get $2 off on specific products.",
+                        LocalDateTime.now(),
+                        LocalDateTime.now().plusDays(30),
+                        "FIXED_AMOUNT",
+                        new BigDecimal(2),
+                        "SPECIFIC_PRODUCTS",
+                        "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
 
         CartItem cartItem = new CartItem();
         cartItem.setId(1L);
@@ -129,17 +126,17 @@ public class CartServiceTest {
     @Test
     @DisplayName("should return cart's item price that not discount")
     void shouldBeNotUpdateCartItemPrice() {
-        PromotionRequest promotion = new PromotionRequest(
-                "FIXEDAMOUNT2",
-                "Fixed Amount $2 Off Specific Products",
-                "Get $2 off on specific products.",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(30),
-                "FIXED_AMOUNT",
-                new BigDecimal(2),
-                "SPECIFIC_PRODUCTS",
-                "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL"
-                );
+        PromotionRequest promotion =
+                new PromotionRequest(
+                        "FIXEDAMOUNT2",
+                        "Fixed Amount $2 Off Specific Products",
+                        "Get $2 off on specific products.",
+                        LocalDateTime.now(),
+                        LocalDateTime.now().plusDays(30),
+                        "FIXED_AMOUNT",
+                        new BigDecimal(2),
+                        "SPECIFIC_PRODUCTS",
+                        "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
 
         // product sku not match to promotion code
         CartItem cartItem = new CartItem();
@@ -166,9 +163,12 @@ public class CartServiceTest {
         when(this.cartRepository.findById(any())).thenReturn(Optional.empty());
 
         // act
-        val thrown = assertThrows(BadRequestException.class, () -> {
-            this.cartService.updateSummaryPrice(mockId);
-        });
+        val thrown =
+                assertThrows(
+                        BadRequestException.class,
+                        () -> {
+                            this.cartService.updateSummaryPrice(mockId);
+                        });
 
         // assert
         assertEquals("Cart id not found.", thrown.getMessage());
@@ -188,53 +188,53 @@ public class CartServiceTest {
         val mockCartItem2 = new CartItem();
         mockCartItem2.setPrice(new BigDecimal(100));
 
-        val mockPromotion1 = new PromotionResponse(
-                1L,
-                "A",
-                "AAA",
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "FIXED_AMOUNT",
-                new BigDecimal(10),
-                BigDecimal.ZERO,
-                "ENTIRE_CART",
-                List.of(""),
-                1,
-                2
-        );
+        val mockPromotion1 =
+                new PromotionResponse(
+                        1L,
+                        "A",
+                        "AAA",
+                        "",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        "FIXED_AMOUNT",
+                        new BigDecimal(10),
+                        BigDecimal.ZERO,
+                        "ENTIRE_CART",
+                        List.of(""),
+                        1,
+                        2);
 
-        val mockPromotion2 = new PromotionResponse(
-                2L,
-                "B",
-                "BBB",
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "FIXED_AMOUNT",
-                new BigDecimal(20),
-                BigDecimal.ZERO,
-                "ENTIRE_CART",
-                List.of(""),
-                1,
-                2
-        );
+        val mockPromotion2 =
+                new PromotionResponse(
+                        2L,
+                        "B",
+                        "BBB",
+                        "",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        "FIXED_AMOUNT",
+                        new BigDecimal(20),
+                        BigDecimal.ZERO,
+                        "ENTIRE_CART",
+                        List.of(""),
+                        1,
+                        2);
 
-        val mockPromotion3 = new PromotionResponse(
-                3L,
-                "C",
-                "CCC",
-                "",
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                "FIXED_AMOUNT",
-                new BigDecimal(30),
-                BigDecimal.ZERO,
-                "ENTIRE_CART",
-                List.of(""),
-                1,
-                2
-        );
+        val mockPromotion3 =
+                new PromotionResponse(
+                        3L,
+                        "C",
+                        "CCC",
+                        "",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        "FIXED_AMOUNT",
+                        new BigDecimal(30),
+                        BigDecimal.ZERO,
+                        "ENTIRE_CART",
+                        List.of(""),
+                        1,
+                        2);
 
         mockCart.setCartItems(List.of(mockCartItem1, mockCartItem2));
 
@@ -242,8 +242,10 @@ public class CartServiceTest {
         when(this.promotionService.getPromotionByCode("A")).thenReturn(mockPromotion1);
         when(this.promotionService.getPromotionByCode("B")).thenReturn(mockPromotion2);
         when(this.promotionService.getPromotionByCode("C")).thenReturn(mockPromotion3);
-        when(this.cartItemService.calculateDiscountPrice(mockCartItem1)).thenReturn(new BigDecimal(50));
-        when(this.cartItemService.calculateDiscountPrice(mockCartItem2)).thenReturn(new BigDecimal(100));
+        when(this.cartItemService.calculateDiscountPrice(mockCartItem1))
+                .thenReturn(new BigDecimal(50));
+        when(this.cartItemService.calculateDiscountPrice(mockCartItem2))
+                .thenReturn(new BigDecimal(100));
         when(this.cartRepository.save(any())).thenReturn(mockCart);
 
         // act
