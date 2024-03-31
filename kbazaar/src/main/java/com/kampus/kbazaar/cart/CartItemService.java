@@ -1,5 +1,6 @@
 package com.kampus.kbazaar.cart;
 
+import com.kampus.kbazaar.promotion.PromotionRepository;
 import com.kampus.kbazaar.promotion.PromotionResponse;
 import com.kampus.kbazaar.promotion.PromotionService;
 import java.math.BigDecimal;
@@ -10,9 +11,12 @@ import org.springframework.stereotype.Service;
 public class CartItemService {
 
     private final PromotionService promotionService;
+    private final PromotionRepository promotionRepository;
 
-    public CartItemService(PromotionService promotionService) {
+    public CartItemService(
+            PromotionService promotionService, PromotionRepository promotionRepository) {
         this.promotionService = promotionService;
+        this.promotionRepository = promotionRepository;
     }
 
     public BigDecimal calculateDiscountPrice(CartItem cartItem) {
