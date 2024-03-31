@@ -207,6 +207,7 @@ public class CartService {
         return totalDiscount;
     }
 
+    @Transactional
     public Cart updateSummaryPrice(Long id) {
         val cartOptional = this.cartRepository.findById(id);
 
