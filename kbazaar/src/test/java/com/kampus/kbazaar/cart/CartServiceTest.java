@@ -1,10 +1,8 @@
 package com.kampus.kbazaar.cart;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import com.kampus.kbazaar.promotion.Promotion;
 import java.math.BigDecimal;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -22,8 +19,8 @@ public class CartServiceTest {
 
     @InjectMocks private CartService cartService;
     @Mock private CartRepository cartRepository;
-    @BeforeEach
 
+    @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
