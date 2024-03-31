@@ -141,6 +141,7 @@ public class CartService {
                 }
 
                 cartItem.setQuantity(request.quantity());
+                cart.getCartItems().add(cartItem);
                 cartRepository.save(cart);
 
                 return new AddProductToCartResponse(username, cartItem, price);
