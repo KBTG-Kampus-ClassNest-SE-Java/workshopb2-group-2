@@ -1,16 +1,19 @@
 package com.kampus.kbazaar.cart;
 
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.kampus.kbazaar.security.JwtAuthFilter;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(SpringExtension.class)
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(
         controllers = CartController.class,
         excludeFilters =
@@ -29,17 +33,26 @@ public class CartControllerTest {
 
     @Autowired private MockMvc mockMvc;
 
-    @InjectMocks private CartController cartController;
+    @MockBean CartService cartService;
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(cartController).build();
+        MockMvcBuilders.standaloneSetup().build();
     }
 
     @Test
-    public void getCart_ReturnsOk() throws Exception {
+    @DisplayName("should return all cart")
+    public void getCart_ReturnsAllCart() throws Exception {
+
+        CartResponse cartResponse = new CartResponse();
+        cartResponse.setUsername("Boss");
+        // Set other properties as needed
+
+        when(cartService.getCarts()).thenReturn(new ArrayList<CartResponse>());
+
         mockMvc.perform(get("/api/v1/carts").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        verify(cartService, times(1)).getCarts();
     }
 }
