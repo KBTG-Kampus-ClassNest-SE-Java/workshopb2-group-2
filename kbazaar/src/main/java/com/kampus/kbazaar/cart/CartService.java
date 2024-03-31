@@ -3,6 +3,7 @@ package com.kampus.kbazaar.cart;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.val;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +35,12 @@ public class CartService {
             cartResponses.add(cartResponse);
         }
         return cartResponses;
+    }
+
+    // this method will find cart by username
+    public Optional<Cart> getCartByUsername(String username) {
+        Optional<Cart> cartUser = cartRepository.findAllWithItemsByUsername(username);
+        return cartUser;
     }
 
     // TODO poc interface
