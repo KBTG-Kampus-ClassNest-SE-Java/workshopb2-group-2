@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
     // JPQL
-    @Query("SELECT c, ci FROM cart c INNER JOIN FETCH c.cartItems ci")
+    @Query("SELECT c FROM cart c INNER JOIN FETCH c.cartItems ci")
     List<Cart> findAllWithItems();
 
     // query by user
-    @Query("SELECT c, ci FROM cart c INNER JOIN FETCH c.cartItems ci WHERE c.username = :username")
+    @Query("SELECT c FROM cart c INNER JOIN FETCH c.cartItems ci WHERE c.username = :username")
     Optional<Cart> findAllWithItemsByUsername(String username);
 
     Optional<Cart> findByUsername(String username);
