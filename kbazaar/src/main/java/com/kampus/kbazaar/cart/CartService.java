@@ -38,7 +38,7 @@ public class CartService {
     }
 
     public List<CartResponse> getCarts() {
-        List<Cart> carts = cartRepository.findAllWithItems();
+        List<Cart> carts = cartRepository.findAll();
         val cartResponses = new ArrayList<CartResponse>();
 
         for (Cart cart : carts) {
