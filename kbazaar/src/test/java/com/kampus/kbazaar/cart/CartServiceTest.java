@@ -5,8 +5,11 @@ import static org.mockito.Mockito.when;
 
 import com.kampus.kbazaar.promotion.Promotion;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.kampus.kbazaar.promotion.PromotionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,12 +81,20 @@ public class CartServiceTest {
         assertEquals(new BigDecimal(39980.25), result.get(0).getGrandTotal());
     }
 
+    @Test
     @DisplayName("Should return cart that already updated!")
     void shouldBeAbleToGetUpdateProductItems() {
-        Promotion promotion = new Promotion();
-        promotion.setCode("FIXEDAMOUNT2");
-        promotion.setProductSkus("STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
-        promotion.setDiscountAmount(new BigDecimal(2));
+        PromotionRequest promotion = new PromotionRequest(
+                "FIXEDAMOUNT2",
+                "Fixed Amount $2 Off Specific Products",
+                "Get $2 off on specific products.",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                "FIXED_AMOUNT",
+                new BigDecimal(2),
+                "SPECIFIC_PRODUCTS",
+                "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL"
+        );
 
         CartItem cartItem = new CartItem();
         cartItem.setId(1L);
@@ -96,11 +107,10 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-        //        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
-        //
-        //        assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
-        //        assertEquals("FIXEDAMOUNT2",
-        // cartResult.getCartItems().get(0).getPromotionCodes());
+        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
+
+        assertEquals(new BigDecimal(2), cartResult.getCartItems().get(0).getDiscount());
+        assertEquals("FIXEDAMOUNT2", cartResult.getCartItems().get(0).getPromotionCodes());
 
     }
 
@@ -113,10 +123,17 @@ public class CartServiceTest {
     @Test
     @DisplayName("should return cart's item price that not discount")
     void shouldBeNotUpdateCartItemPrice() {
-        Promotion promotion = new Promotion();
-        promotion.setCode("FIXEDAMOUNT2");
-        promotion.setProductSkus("STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL");
-        promotion.setDiscountAmount(new BigDecimal(2));
+        PromotionRequest promotion = new PromotionRequest(
+                "FIXEDAMOUNT2",
+                "Fixed Amount $2 Off Specific Products",
+                "Get $2 off on specific products.",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                "FIXED_AMOUNT",
+                new BigDecimal(2),
+                "SPECIFIC_PRODUCTS",
+                "STATIONERY-STAPLER-SWINGLINE,STATIONERY-PENCIL-FABER-CASTELL"
+                );
 
         // product sku not match to promotion code
         CartItem cartItem = new CartItem();
@@ -130,9 +147,9 @@ public class CartServiceTest {
         Cart cart = new Cart();
         cart.setCartItems(cartItemsList);
 
-        //        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
-        //
-        //        assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
-        //        assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
+        Cart cartResult = cartService.appliedSpecificPromotion(cart, promotion);
+
+        assertEquals(new BigDecimal(0), cartResult.getCartItems().get(0).getDiscount());
+        assertEquals("", cartResult.getCartItems().get(0).getPromotionCodes());
     }
 }
